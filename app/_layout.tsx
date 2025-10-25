@@ -17,10 +17,9 @@ export default function RootLayout() {
           headerStyle: {
             backgroundColor: "#A23B00"
           },
-          headerTintColor: 'white', // цвет текста заголовка
+          headerTintColor: 'white',
           headerTitleStyle: {
             fontSize: 22,
-            // fontFamily: ''
           },
         }}
       />

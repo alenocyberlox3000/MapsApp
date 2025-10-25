@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default function Button({ title, onPress, style, theme }: Props) {
-//   if (theme === 'default') {
     return (
         <View style={theme === 'modal' ? styles.modalContainer : [styles.buttonContainer, style]}>
             <Pressable style={theme === 'modal' ? styles.modalButton : styles.button} onPress={onPress}>
@@ -16,7 +15,6 @@ export default function Button({ title, onPress, style, theme }: Props) {
             </Pressable>
         </View>
     );
-//   } 
 }
 
 const styles = StyleSheet.create({
@@ -45,7 +43,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '80%',
     height: 55,
-    // marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
