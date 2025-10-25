@@ -1,50 +1,24 @@
-# Welcome to your Expo app 👋
+# ✨Maps App🎃✨
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Maps App — это мобильное приложение на React Native с использованием Expo, позволяющее пользователям добавлять маркеры на карту. Каждый маркер содержит название, описание, координаты и возможность прикрепить фотографии. Для разработки использованы библиотеки: react-native-maps для отображения карт, expo-image-picker для выбора изображений и expo-router для навигации.
+## Установка
+1. Клонируйте репозиторий
 
-## Get started
-
-1. Install dependencies
+2. Установите зависимости с помощью команды:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Запустите приложение с помощью команды:
 
    ```bash
    npx expo start
    ```
+4. С помощью приложения "Expo Go" отсканируйте QR код и Maps App запустится
 
-In the output, you'll find options to open the app in a
+## Доступные функции
+С помощью долгого нажатия на карту Вы можете добавить маркер, при нажатии на который откроется экран, где можно посмотреть данные маркера(название, описание, координаты), прикрепить или удалить фотографии, отредактировать название и описание маркера. Внимание! Для того, чтобы внесенные Вами изменения и фотографии сохранились, необходимо нажать на кнопку сохранить! После сохранения Вам откроется главный экран с картой и при теперь при нажатии на маркер Вы увидите, что все изменения сохранились.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Проблемы и дальнейшие планы
+Пока не реализовано удаление маркеров, не подключена база данных, а также нет сохранения маркеров, поэтому при каждом запуске всё сбрасывается.
