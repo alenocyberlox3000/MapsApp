@@ -1,44 +1,48 @@
+import { useDatabase } from '@/contexts/DatabaseContext';
 import { MapsMarker } from "@/types";
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { MarkerList } from './MarkerList';
 
 const iconImage = require('@/assets/images/ghost.png')
 
 export default function Map() {
   const router = useRouter();
-  const [markers, setMarkers] = useState(MarkerList);
+  const { markers, isLoading, addMarker } = useDatabase();
 
   const markersArray = markers.map((marker) => (
     <Marker
       key={marker.id}
-      coordinate={marker.coordinate}
-      onPress={() => handleMarkerPress(marker.id)}
+      coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
+      onPress={() => handleMarkerPress(marker.id!)}
       icon={iconImage}
     />
   ));
 
-  const onMapPress = (e: any) => {
-    const newId = String(markers.length + 1);
+  const onMapPress = async (e: any) => {
     const newMarker: MapsMarker = {
-      id: newId,
-      title: `Marker #${newId}`,
+      title: `Marker`,
       description: "Description",
-      coordinate: {
-        latitude: e.nativeEvent.coordinate.latitude,
-        longitude: e.nativeEvent.coordinate.longitude,
-      },
+      latitude: e.nativeEvent.coordinate.latitude,
+      longitude: e.nativeEvent.coordinate.longitude,
     };
 
-    setMarkers([...markers, newMarker]);
-    MarkerList.push(newMarker);
+    await addMarker(newMarker);
+
   };
 
-  const handleMarkerPress = (id: string) => {
+  const handleMarkerPress = (id: number) => {
     router.push(`/marker/${id}`);
   };
+
+  if (isLoading) {
+    return (
+      <Text style={{ flex: 1, textAlign: "center", marginTop: 50 }}>
+        Загрузка...
+      </Text>
+    );
+  }
 
   return (
     <MapView 

@@ -20,14 +20,14 @@ export default function Button({ title, onPress, style, theme }: Props) {
 const styles = StyleSheet.create({
   buttonContainer: {
     width: '90%',
-    height: 68,
+    height: 55,
     marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
   },
   button: {
-    borderRadius: 25,
+    borderRadius: 17,
     width: '100%',
     height: '100%',
     alignItems: 'center',

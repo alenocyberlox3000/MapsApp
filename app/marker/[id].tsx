@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import ImageList from '@/components/ImageList';
-import { MarkerList } from '@/components/MarkerList';
+import { useDatabase } from "@/contexts/DatabaseContext";
+import { deleteImage } from '@/database/operations';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -9,26 +10,32 @@ import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 export default function MarkerDetail() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const marker = MarkerList.find(marker => marker.id === id);
+  const { getMarkers, updateMarker, deleteMarker, getMarkerImages, addImage } =
+    useDatabase();
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
+  const [marker, setMarker] = useState<any>(null);
 
   useEffect(() => {
-    if (marker) {
-      setTitle(marker.title);
-      setDescription(marker.description);
-      setImages(marker.images || []);
-    }
-  }, [marker]);
+    const loadMarker = async () => {
+      const allMarkers = await getMarkers();
+      const m = allMarkers.find((m) => m.id === Number(id));
+      if (m) {
+        setMarker(m);
+        setTitle(m.title);
+        setDescription(m.description);
+        const imgs = await getMarkerImages(m.id!);
+        setImages(imgs.map((i) => i.uri));
+      }
+    };
+    loadMarker();
+  }, [id, getMarkers, getMarkerImages]);
 
-  const handleSave = () => {
-    if (marker) {
-      marker.title = title;
-      marker.description = description;
-      marker.images = images;
-    }
+  const handleSave = async () => {
+    if (!marker) return;
+    await updateMarker(marker.id!, title, description);
     Alert.alert('Успех', 'Данные успешно сохранены!');
     router.back();
   };
@@ -41,18 +48,58 @@ export default function MarkerDetail() {
         quality: 1,
       });
 
-      if (!result.canceled) {
-        const newImages = result.assets.map(image => image.uri);
-        setImages(prevImages => [...prevImages, ...newImages]);
+      if (!result.canceled && result.assets.length > 0) {
+        const uri = result.assets[0].uri;
+        setImages((prev) => [...prev, uri]);
+        if (marker) await addImage(marker.id, uri);
       }
     } catch (error) {
       console.error(error);
       Alert.alert('Ошибка', 'Произошла ошибка при выборе изображения. Пожалуйста, попробуйте еще раз.');
     }
   };
+  
+  const removeImage = async (uri: string) => { 
+    if (!marker) return; 
+    const imgs = await getMarkerImages(marker.id); 
+    const imgToDelete = imgs.find((i) => i.uri === uri); 
+    if (!imgToDelete) return; 
+ 
+    Alert.alert( 
+      "Подтвердите удаление", 
+      "Вы уверены, что хотите удалить это изображение?", 
+      [ 
+        { text: "Отмена", style: "cancel" }, 
+        { 
+          text: "Удалить", 
+          style: "destructive", 
+          onPress: async () => { 
+            await deleteImage(Number(imgToDelete.id)); 
+            setImages((prev) => prev.filter((i) => i !== uri)); 
+          }, 
+        }, 
+      ] 
+    ); 
+  };
 
-  const removeImage = (uri: string) => {
-    setImages(images.filter(image => image !== uri));
+  const handleDelete = async () => {
+    if (!marker) return;
+    Alert.alert(
+      "Подтвердите удаление",
+      "Вы уверены, что хотите удалить этот маркер?",
+      [
+        { text: "Отмена", style: "cancel" },
+        {
+          text: "Удалить",
+          style: "destructive",
+          onPress: async () => {
+            await deleteMarker(marker.id!);
+            Alert.alert("Маркер удалён");
+            router.back();
+          },
+        },
+      ]
+    );
   };
 
   if (!marker) {
@@ -76,12 +123,17 @@ export default function MarkerDetail() {
       />
 
       <Text style={styles.label}>Координаты</Text>
-      <Text style={styles.coordinate}>Широта: {marker.coordinate.latitude}</Text>
-      <Text style={styles.coordinate}>Долгота: {marker.coordinate.longitude}</Text>
+      <Text style={styles.coordinate}>Широта: {marker.latitude}</Text>
+      <Text style={styles.coordinate}>Долгота: {marker.longitude}</Text>
     
       <ImageList images={images} removeImage={removeImage} /> 
-      <Button title="Добавить фото" onPress={handleAddImage} />
-      <Button title="Сохранить" onPress={handleSave} style={styles.saveButton}/>
+      <Button title="Добавить фото" onPress={handleAddImage} style={styles.saveButton}/>
+      <Button title="Сохранить" onPress={handleSave} />
+      <Button
+        title="Удалить маркер"
+        onPress={handleDelete}
+        style={{ marginBottom: 40 }}
+      />
     </View>
   );
 };
@@ -116,6 +168,6 @@ const styles = StyleSheet.create({
     color: '#551f00ff'
   },
   saveButton: {
-    marginBottom: 45,
+    marginBottom: 20,
   },
 });
